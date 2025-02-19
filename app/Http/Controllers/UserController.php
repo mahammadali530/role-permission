@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -20,8 +19,8 @@ class UserController extends Controller implements HasMiddleware
         return [
             new Middleware('permission:view users', only:['index']),
             new Middleware('permission:edit users', only:['edit']),
-            new Middleware('permission:create roles', only:['create']),
-            new Middleware('permission:delete roles', only:['destroy']),
+            new Middleware('permission:create users', only:['create']),
+            new Middleware('permission:delete users', only:['destroy']),
         ];
     }
     /**
@@ -106,6 +105,9 @@ class UserController extends Controller implements HasMiddleware
             'hasRoles' => $hasRoles
         ]);
     }
+    
+    
+
 
     /**
      * Update the specified resource in storage.
@@ -133,18 +135,20 @@ class UserController extends Controller implements HasMiddleware
 
     }
 
+    
+
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(string $id)
     {
-        $isdeleted = User::destroy(($id));
-        if ($isdeleted) {
-            session()->flash('success', 'users delete successfulye');
-            return redirect('users');
-        } else {
-            return 'no deleted record';
-        }
-     }
+        $user = User::find($id);
     
+        if ($user) {
+            $user->delete();
+            return response()->json(['success' => true, 'message' => 'User deleted successfully!']);
+        }
+    
+        return response()->json(['success' => false, 'message' => 'User not found!']);
+    }
 }

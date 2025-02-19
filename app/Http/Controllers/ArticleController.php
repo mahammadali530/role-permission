@@ -111,7 +111,7 @@ class ArticleController extends Controller implements HasMiddleware
     {
         $isdeleted = Article::destroy(($id));
         if ($isdeleted) {
-            session()->flash('success', 'permissions delete successfulye');
+            session()->flash('success', 'articles delete successfulye');
             return redirect('articles');
         } else {
             return 'no deleted record';

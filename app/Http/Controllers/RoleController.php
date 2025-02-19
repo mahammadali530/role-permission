@@ -24,7 +24,7 @@ class RoleController extends Controller  implements HasMiddleware
             new Middleware('permission:delete roles', only:['destroy']),
         ];
     }
-    //This is metod will show permission page
+    
     public function index(){
         $roles = Role::orderBy('name','ASC')->paginate(5);
         return view('roles.list',[
@@ -32,15 +32,16 @@ class RoleController extends Controller  implements HasMiddleware
         ]);
     }
 
-    //This is metod will create permission page
+   
     public function create(){
         $permissions = Permission::orderBy('name','ASC')->get();
         return view('roles.create',[
             'permissions' => $permissions
         ]);
     }
+    
+    
 
-    //This is metod store show permission page
     public function store(Request $request){
         $validator = Validator::make($request->all(),[
             'name' =>'required|unique:roles|min:3'
@@ -53,6 +54,7 @@ class RoleController extends Controller  implements HasMiddleware
                 $role->givePermissionTo($name);
             }
           }
+          
           return redirect()->route('roles.index')->with('success', 'Roles added successfuly ');
         }else{
             return redirect()->route('roles.create')->withInput()->withErrors($validator);

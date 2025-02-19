@@ -1,4 +1,5 @@
 <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous"> -->
+ 
 <x-app-layout>
     <x-slot name="header">
         <div class="flex justify-between">
@@ -28,7 +29,7 @@
             <tbody class="bg-white">
                 @if($users->isNotEmpty())
                 @foreach($users as $user)
-                <tr class="border-b">
+                <tr  id="user-row-{{ $user->id }}" class="border-b">
                     <td class="px-6 py-3 text-left">{{$user->id}}</td>
                     <td class="px-6 py-3 text-left">{{$user->name}}</td>
                     <td class="px-6 py-3 text-left">{{$user->email}}</td>
@@ -37,11 +38,14 @@
                     <td class="px-6 py-3 text-center">
                     <div class="flex justify-center space-x-2">
                     @can('edit users')
-                    <a href="{{ route("users.edit", $user->id) }}" class="bg-slate-700 text-sm rounded-md text-white px-3 py-2 hover:bg-slate-600 " >Edit</a>
+                    <a href="{{ route('users.edit', $user->id) }}" class="bg-slate-700 text-sm rounded-md text-white px-3 py-2 hover:bg-slate-600 " >Edit</a>
                     @endcan
                     @can('delete users')
-                    <a href="{{ route('delete.users', ['id' => $user]) }}" onclick="return confirm('Are you sure?');" class="bg-red-600 text-sm rounded-md text-white px-3 py-2 hover:bg-red-500">Delete</a>
-                  @endcan
+                   <button onclick="deleteUser({{ $user->id }})"
+                    class="bg-red-600 text-sm rounded-md text-white px-3 py-2 hover:bg-red-500">
+                    Delete
+                   </button>
+                    @endcan
                      </div>
                     </td>
                 </tr>
@@ -149,3 +153,41 @@
 
 </script>
  -->
+ <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function deleteUser(userId) {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, delete it!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch(`/users/${userId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire("Deleted!", data.message, "success"); 
+                        document.getElementById(`user-row-${userId}`).remove();
+                    } else {
+                        Swal.fire("Error!", data.message, "error");
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire("Error!", "Something went wrong.", "error");
+                });
+            }
+        });
+    }
+</script>
+

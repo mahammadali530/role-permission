@@ -22,6 +22,7 @@
                     <th class="px-6 py-3 text-left">Author</th>
                     <th class="px-6 py-3 text-left" width="180">Created</th>
                     <th class="px-6 py-3 text-center" width="180">Action</th>
+                    
                 </tr>
             </thead>
             <tbody class="bg-white">

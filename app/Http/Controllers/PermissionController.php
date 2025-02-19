@@ -25,7 +25,7 @@ class PermissionController extends Controller implements HasMiddleware
     }
     //This is metod will show permission page
     public function index(){
-        $permissions = Permission::orderBy('created_at','DESC')->paginate(5);
+        $permissions = Permission::orderBy('created_at','DESC')->paginate(10);
         return view('permissions.list',[
             'permissions' => $permissions
         ]);
@@ -73,6 +73,7 @@ class PermissionController extends Controller implements HasMiddleware
      public function update(Request $request, $id){
         $permission = Permission::find($id);
         if ($permission) {
+            
             $permission->name = $request->name; 
             if ($permission->save()) {
                 return response()->json(['success' => true, 'message' => 'Student updated successfully']);
